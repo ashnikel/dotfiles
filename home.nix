@@ -118,6 +118,76 @@
       vimAlias = true;
     };
 
+programs.waybar = {
+  enable = true;
+  settings = {
+    mainBar = {
+      layer = "top";
+      position = "top";
+      height = 30;
+      spacing = 8;
+      margin = "5 10 0 10";
+
+      modules-left = [ "hyprland/workspaces" "hyprland/window" ];
+      modules-center = [ "clock" ];
+      modules-right = [ "pulseaudio" "network" "battery" "tray" ];
+
+      "clock" = {
+        format = "  {:%H:%M}";
+        tooltip-format = "{:%A, %d %B %Y}";
+      };
+
+      "pulseaudio" = {
+        format = "{icon} {volume}%";
+        format-icons = [ "" "" "" ];
+        on-click = "pavucontrol";
+      };
+
+      "battery" = {
+        format = "{icon} {capacity}%";
+        format-icons = [ "" "" "" "" "" ];
+      };
+
+      "network" = {
+        format-wifi = "  {essid}";
+        format-ethernet = "󰈀  {ifname}";
+        format-disconnected = "󰖪";
+      };
+    };
+  };
+
+  style = ''
+    * {
+      font-family: JetBrainsMono Nerd Font, sans-serif;
+      font-size: 13px;
+      color: #e0e0e0;
+    }
+
+    window#waybar {
+      background: rgba(25, 25, 28, 0.8);
+      border-radius: 12px;
+      margin: 5px 10px;
+      padding: 4px 10px;
+    }
+
+    #workspaces button {
+      padding: 0 8px;
+      border-radius: 8px;
+      color: #ccc;
+    }
+
+    #workspaces button.active {
+      background: #5e81ac;
+      color: white;
+    }
+
+    #clock, #battery, #network, #pulseaudio, #tray {
+      padding: 0 10px;
+    }
+  '';
+};
+    
+
     programs.starship.enable = true;
     programs.zoxide.enable = true;
 
@@ -126,10 +196,10 @@
       enable = true;
       settings = {
         preload = [
-          "~/dotfiles/wallpapers/01.png"
+          "${config.home.homeDirectory}/dotfiles/wallpapers/01.png"
         ];
         wallpaper = [
-          "eDP-1,~/dotfiles/wallpapers/01.png"
+          "eDP-1,${config.home.homeDirectory}/dotfiles/wallpapers/01.png"
         ];
         splash = false;
         ipc = "off";
