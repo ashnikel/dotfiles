@@ -29,6 +29,14 @@
      zed-editor
     ];
 
+    home.sessionVariables = {
+      OZONE_PLATFORM = "wayland";
+      ELECTRON_OZONE_PLATFORM_HINT = "auto";
+      NIXOS_OZONE_WL = "1";
+      XDG_SESSION_TYPE = "wayland";
+      GDK_BACKEND = "wayland";
+    };
+
     programs.firefox = {
       enable = true;
       profiles.default = {
@@ -39,6 +47,12 @@
 	};
       };
     };
+
+    programs.vscode = {
+      enable = true;
+      package = pkgs.vscode;
+    };
+
 
     programs.fish = {
       enable = true;

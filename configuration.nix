@@ -151,5 +151,28 @@
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
   system.stateVersion = "25.11"; # Did you read the comment?
 
+
+# --- SWAP SETTINGS FOR APPLE SILICON (8GB RAM) --- #
+
+zramSwap = {
+  enable = true;
+  memoryPercent = 50;
+  priority = 100;
+};
+
+swapDevices = [
+  {
+    device = "/swapfile";
+    priority = 10;
+  }
+];
+
+boot.kernel.sysctl = {
+  "vm.swappiness" = 10;
+  "vm.vfs_cache_pressure" = 50;
+  "vm.page-cluster" = 2;
+};
+
+
 }
 
