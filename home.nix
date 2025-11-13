@@ -120,21 +120,52 @@
 
 programs.waybar = {
   enable = true;
+
   settings = {
     mainBar = {
       layer = "top";
       position = "top";
-      height = 30;
+      height = 28;
+      margin = "6 40 0 40";
       spacing = 8;
-      margin = "5 10 0 10";
 
       modules-left = [ "hyprland/workspaces" "hyprland/window" ];
       modules-center = [ "clock" ];
-      modules-right = [ "pulseaudio" "network" "battery" "tray" ];
+      modules-right = [
+        "temperature"
+        "cpu"
+        "memory"
+        "network"
+        "pulseaudio"
+        "keyboard-state"
+        "battery"
+        "tray"
+      ];
 
       "clock" = {
-        format = "  {:%H:%M}";
+        format = "{:%H:%M}";
         tooltip-format = "{:%A, %d %B %Y}";
+      };
+
+      "cpu" = {
+        format = " {usage}%";
+      };
+
+      "memory" = {
+        format = " {used:0.1f} GB";
+      };
+
+      "temperature" = {
+        hwmon-path = "/sys/class/thermal/thermal_zone0/temp";
+        critical-threshold = 75;
+        format = " {temperatureC}°C";
+      };
+
+      "network" = {
+        format-wifi = " {essid}";
+        format-ethernet = "󰈀 {ifname}";
+        format-disconnected = "󰖪 offline";
+        tooltip-format = "{ifname} via {gwaddr}";
       };
 
       "pulseaudio" = {
@@ -143,15 +174,20 @@ programs.waybar = {
         on-click = "pavucontrol";
       };
 
+      "keyboard-state" = {
+        numlock = false;
+        capslock = true;
+        format = "{layout} {icon}";
+        format-icons = {
+          "us" = "🇺🇸";
+          "ru" = "🇷🇺";
+        };
+        tooltip = false;
+      };
+
       "battery" = {
         format = "{icon} {capacity}%";
         format-icons = [ "" "" "" "" "" ];
-      };
-
-      "network" = {
-        format-wifi = "  {essid}";
-        format-ethernet = "󰈀  {ifname}";
-        format-disconnected = "󰖪";
       };
     };
   };
@@ -160,33 +196,54 @@ programs.waybar = {
     * {
       font-family: JetBrainsMono Nerd Font, sans-serif;
       font-size: 13px;
-      color: #e0e0e0;
+      color: #D8DEE9;
     }
 
     window#waybar {
-      background: rgba(25, 25, 28, 0.8);
-      border-radius: 12px;
-      margin: 5px 10px;
+      background: rgba(46, 52, 64, 0.85);
+      border: 1px solid rgba(67, 76, 94, 0.8);
+      border-radius: 10px;
       padding: 4px 10px;
+      margin: 6px 40px 0 40px;
     }
 
     #workspaces button {
+      background: transparent;
+      color: #B0BEC5;
       padding: 0 8px;
-      border-radius: 8px;
-      color: #ccc;
+      border-radius: 6px;
+      transition: all 0.2s ease;
     }
 
     #workspaces button.active {
-      background: #5e81ac;
-      color: white;
+      background: #81A1C1;
+      color: #ECEFF4;
     }
 
-    #clock, #battery, #network, #pulseaudio, #tray {
-      padding: 0 10px;
+    #workspaces button:hover {
+      background: rgba(129,161,193,0.25);
+      color: #ECEFF4;
+    }
+
+    #clock, #cpu, #memory, #temperature, #pulseaudio, #keyboard-state,
+    #network, #battery, #tray {
+      margin: 0 8px;
+      padding: 0 6px;
+    }
+
+    #keyboard-state {
+      font-weight: 600;
+      color: #EBCB8B;
+    }
+
+    tooltip {
+      background: #3B4252;
+      border: 1px solid #4C566A;
+      border-radius: 6px;
+      color: #ECEFF4;
     }
   '';
 };
-    
 
     programs.starship.enable = true;
     programs.zoxide.enable = true;
