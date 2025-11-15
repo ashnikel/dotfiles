@@ -85,13 +85,63 @@
   programs.amnezia-vpn.enable = true;
   programs.hyprland.enable = true;
   programs.fish.enable = true;
-  programs.regreet.enable = true;
-  
+#  programs.regreet.enable = true;
+ 
+
+#####################
+programs.regreet = {
+  enable = true;
+
+  settings = {
+    background = {
+      path = "/etc/background.jpg";
+      fit = "Cover";
+    };
+
+    GTK = {
+      application_prefer_dark_theme = true;
+
+      cursor_theme_name = "Adwaita";
+      cursor_blink = true;
+
+      font_name = "Cantarell 16";
+      icon_theme_name = "Adwaita";
+#      theme_name = "Adwaita-dark";
+    };
+
+    appearance = {
+      greeting_msg = "Welcome back!";
+    };
+
+    commands = {
+      reboot = [ "systemctl" "reboot" ];
+      poweroff = [ "systemctl" "poweroff" ];
+      x11_prefix = [ "startx" "/usr/bin/env" ];
+    };
+
+    widget = {
+      clock = {
+        format = "%a %H:%M";
+        resolution = "500ms";
+        timezone = "Europe/Moscow";
+        label_width = 150;
+      };
+    };
+  };
+};
+
+#####################
+
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
   environment.systemPackages = with pkgs; [
     ashell
+    blueberry
     git
+    hyprlock
+    networkmanagerapplet
+    pavucontrol
+    playerctl
     usbutils
   ];
 
@@ -114,6 +164,7 @@
   services.upower.enable = true;
 
   hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
   hardware.asahi.peripheralFirmwareDirectory = ./firmware;
 
   networking.wireless.iwd = {

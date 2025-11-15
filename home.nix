@@ -15,6 +15,8 @@
      fd
      hyprpaper
      moor
+     nordic
+     nordzy-cursor-theme
      obsidian
      pcmanfm
      qview
@@ -52,6 +54,30 @@
       enable = true;
       package = pkgs.vscode;
     };
+
+gtk.cursorTheme = {
+  name = "Nordzy-cursors";
+  package = pkgs.nordzy-cursor-theme;
+  size = 32;
+};
+
+home.sessionVariables = {
+  XCURSOR_THEME = "Nordzy-cursors";
+  XCURSOR_SIZE = "32";
+};
+
+gtk = {
+  enable = true;
+  theme = {
+    name = "Nordic";
+    package = pkgs.nordic;
+  };
+  iconTheme = {
+    name = "Nordzy";
+    package = pkgs.nordzy-icon-theme;
+  };
+};
+
 
 
     programs.fish = {
@@ -133,7 +159,7 @@
     };
 
 programs.waybar = {
-  enable = true;
+  enable = false;
 
   settings = {
     mainBar = {
@@ -267,10 +293,10 @@ programs.waybar = {
       enable = true;
       settings = {
         preload = [
-          "${config.home.homeDirectory}/dotfiles/wallpapers/01.png"
+          "${config.home.homeDirectory}/dotfiles/wallpapers/02.jpg"
         ];
         wallpaper = [
-          "eDP-1,${config.home.homeDirectory}/dotfiles/wallpapers/01.png"
+          "eDP-1,${config.home.homeDirectory}/dotfiles/wallpapers/02.jpg"
         ];
         splash = false;
         ipc = "off";
