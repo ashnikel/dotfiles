@@ -6,6 +6,7 @@
     home.packages = with pkgs; [
      _1password-gui
      bat
+     bibata-cursors
      btop
      dig
      dysk
@@ -14,9 +15,10 @@
      file
      fd
      hyprpaper
+     hyprshot
      moor
      nordic
-     nordzy-cursor-theme
+#     nordzy-cursor-theme
      obsidian
      pcmanfm
      qview
@@ -55,15 +57,19 @@
       package = pkgs.vscode;
     };
 
+    programs.yazi = {
+      enable = true;
+    };
+
 gtk.cursorTheme = {
-  name = "Nordzy-cursors";
-  package = pkgs.nordzy-cursor-theme;
+  name = "Bibata-Modern-Ice";
+  package = pkgs.bibata-cursors;
   size = 32;
 };
 
 home.sessionVariables = {
-  XCURSOR_THEME = "Nordzy-cursors";
-  XCURSOR_SIZE = "32";
+  HYPRCURSOR_THEME = "Bibata-Modern-Ice";
+  HYPRCURSOR_SIZE = "32";
 };
 
 gtk = {
@@ -76,6 +82,16 @@ gtk = {
     name = "Nordzy";
     package = pkgs.nordzy-icon-theme;
   };
+};
+
+services.mako = {
+  enable = true;
+  backgroundColor = "#3B4252";
+  textColor = "#ECEFF4";
+  borderColor = "#5E81AC";
+  borderSize = 2;
+  defaultTimeout = 5000;
+  padding = "10";
 };
 
 
@@ -134,6 +150,21 @@ gtk = {
           echo "⚠️ Файл $last не текстовый ($mimetype) — пропускаю"
       end
     '';
+
+    functions.y = ''
+          set tmp (mktemp -t "yazi-cwd.XXXXX")
+          yazi $argv --cwd-file="$tmp"
+
+          if test -f "$tmp"
+              set cwd (cat "$tmp")
+              if test -n "$cwd"; and test "$cwd" != "$PWD"
+                  cd -- "$cwd"
+              end
+          end
+
+          rm -f "$tmp"
+    '';
+
     };
 
     programs.git = {
@@ -159,25 +190,25 @@ gtk = {
     };
 
 programs.waybar = {
-  enable = false;
+  enable = true;
 
   settings = {
     mainBar = {
       layer = "top";
       position = "top";
       height = 28;
-      margin = "6 40 0 40";
-      spacing = 8;
+      margin = "0 0 0 0";
+      spacing = 6;
 
       modules-left = [ "hyprland/workspaces" "hyprland/window" ];
       modules-center = [ "clock" ];
       modules-right = [
+	"hyprland/language"
         "temperature"
         "cpu"
         "memory"
         "network"
         "pulseaudio"
-        "keyboard-state"
         "battery"
         "tray"
       ];
@@ -188,101 +219,80 @@ programs.waybar = {
       };
 
       "cpu" = {
-        format = " {usage}%";
+        format = "   {usage}%";
       };
 
       "memory" = {
-        format = " {used:0.1f} GB";
+        format = "   {used:0.1f} GB";
       };
 
       "temperature" = {
         hwmon-path = "/sys/class/thermal/thermal_zone0/temp";
         critical-threshold = 75;
-        format = " {temperatureC}°C";
+        format = "  {temperatureC}°C";
       };
 
       "network" = {
-        format-wifi = " {essid}";
-        format-ethernet = "󰈀 {ifname}";
-        format-disconnected = "󰖪 offline";
+        format-wifi = "   {essid}";
+        format-ethernet = "󰈀  {ifname}";
+        format-disconnected = "󰖪  offline";
         tooltip-format = "{ifname} via {gwaddr}";
       };
 
       "pulseaudio" = {
-        format = "{icon} {volume}%";
+        format = "{icon}  {volume}%";
         format-icons = [ "" "" "" ];
         on-click = "pavucontrol";
       };
 
-      "keyboard-state" = {
-        numlock = false;
-        capslock = true;
-        format = "{layout} {icon}";
-        format-icons = {
-          "us" = "🇺🇸";
-          "ru" = "🇷🇺";
-        };
-        tooltip = false;
+      "hyprland/language" = {
+        format = "{}";
+	format-en = "US";
+	format-ru = "RU";
+	tooltip = false;
       };
 
       "battery" = {
-        format = "{icon} {capacity}%";
+        format = "{icon}  {capacity}%";
         format-icons = [ "" "" "" "" "" ];
       };
     };
   };
+style = ''
+        * {
+          border: none;
+          color: #ECEFF4;
+          font-family: "Inter";
+          font-size: 14px;
+        }
 
-  style = ''
-    * {
-      font-family: JetBrainsMono Nerd Font, sans-serif;
-      font-size: 13px;
-      color: #D8DEE9;
-    }
+        window#waybar {
+          background: rgba(46, 52, 64, 0.5);
+        }
 
-    window#waybar {
-      background: rgba(46, 52, 64, 0.85);
-      border: 1px solid rgba(67, 76, 94, 0.8);
-      border-radius: 10px;
-      padding: 4px 10px;
-      margin: 6px 40px 0 40px;
-    }
+        #workspaces button {
+          padding: 2px 6px;
+          margin: 4px;
+          background: #3B4252;
+          color: #D8DEE9;
+          border-radius: 6px;
+        }
 
-    #workspaces button {
-      background: transparent;
-      color: #B0BEC5;
-      padding: 0 8px;
-      border-radius: 6px;
-      transition: all 0.2s ease;
-    }
+        #workspaces button.active {
+          background: #5E81AC;
+        }
 
-    #workspaces button.active {
-      background: #81A1C1;
-      color: #ECEFF4;
-    }
+	#tray {
+	  margin-right: 10px;
+	}
 
-    #workspaces button:hover {
-      background: rgba(129,161,193,0.25);
-      color: #ECEFF4;
-    }
-
-    #clock, #cpu, #memory, #temperature, #pulseaudio, #keyboard-state,
-    #network, #battery, #tray {
-      margin: 0 8px;
-      padding: 0 6px;
-    }
-
-    #keyboard-state {
-      font-weight: 600;
-      color: #EBCB8B;
-    }
-
-    tooltip {
-      background: #3B4252;
-      border: 1px solid #4C566A;
-      border-radius: 6px;
-      color: #ECEFF4;
-    }
-  '';
+        #clock, #language, #network, #pulseaudio, #battery {
+          padding: 2px 6px;
+          margin: 4px 8px 4px 0px;
+          background: #3B4252;
+          border-radius: 8px;
+        }
+      '';
 };
 
     programs.starship.enable = true;
@@ -293,10 +303,10 @@ programs.waybar = {
       enable = true;
       settings = {
         preload = [
-          "${config.home.homeDirectory}/dotfiles/wallpapers/02.jpg"
+          "${config.home.homeDirectory}/dotfiles/wallpapers/jinx-arcane.jpg"
         ];
         wallpaper = [
-          "eDP-1,${config.home.homeDirectory}/dotfiles/wallpapers/02.jpg"
+          "eDP-1,${config.home.homeDirectory}/dotfiles/wallpapers/jinx-arcane.jpg"
         ];
         splash = false;
         ipc = "off";
