@@ -9,6 +9,7 @@
 
   home.packages = with pkgs; [
     _1password-gui
+    ansible
     bat
     bibata-cursors
     brightnessctl
