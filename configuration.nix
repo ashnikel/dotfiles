@@ -2,32 +2,40 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      # Include the necessary packagesand configuration for Apple Silicon support.
-#      ./apple-silicon-support
-#      <home-manager/nixos>
-#      ./home.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    # Include the necessary packagesand configuration for Apple Silicon support.
+    #      ./apple-silicon-support
+    #      <home-manager/nixos>
+    #      ./home.nix
+  ];
 
-      nix = {
-        gc = {
-          automatic = true;
-          dates = "daily";
-          options = "--delete-older-than 14d";
-        };
-      };
+  nix = {
+    gc = {
+      automatic = true;
+      dates = "daily";
+      options = "--delete-older-than 14d";
+    };
+  };
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.systemd-boot.configurationLimit = 30;
   boot.loader.efi.canTouchEfiVariables = false;
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   nixpkgs.config.allowUnfree = true;
 
@@ -36,7 +44,10 @@
   # Configure network connections interactively with nmcli or nmtui.
   networking.networkmanager.enable = true;
 
-  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+  networking.nameservers = [
+    "1.1.1.1"
+    "8.8.8.8"
+  ];
   # Set your time zone.
   time.timeZone = "Europe/Moscow";
 
@@ -59,8 +70,8 @@
 
   # Enable the X11 windowing system.
   #  services.xserver.enable = true;
-#  services.xserver.displayManager.enable = false;
-#  services.xserver.windowManager.enable = false;
+  #  services.xserver.displayManager.enable = false;
+  #  services.xserver.windowManager.enable = false;
 
   services.pipewire = {
     enable = true;
@@ -87,64 +98,76 @@
   # services.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-   users.users.ash = {
-     isNormalUser = true;
-     extraGroups = [ "wheel" "networkmanager" "input" ]; # Enable ‘sudo’ for the user.
-     shell = pkgs.fish;
-     packages = with pkgs; [
-       tree
-     ];
-   };
+  users.users.ash = {
+    isNormalUser = true;
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+      "input"
+    ]; # Enable ‘sudo’ for the user.
+    shell = pkgs.fish;
+    packages = with pkgs; [
+      tree
+    ];
+  };
 
   programs.amnezia-vpn.enable = true;
   programs.hyprland.enable = true;
   programs.fish.enable = true;
-#  programs.regreet.enable = true;
+  #  programs.regreet.enable = true;
 
+  #####################
+  programs.regreet = {
+    enable = true;
 
-#####################
-programs.regreet = {
-  enable = true;
+    settings = {
+      background = {
+        path = "/etc/background2.png";
+        fit = "Cover";
+      };
 
-  settings = {
-    background = {
-      path = "/etc/background2.png";
-      fit = "Cover";
-    };
+      GTK = {
+        application_prefer_dark_theme = true;
 
-    GTK = {
-      application_prefer_dark_theme = true;
+        cursor_theme_name = "Adwaita";
+        cursor_blink = true;
 
-      cursor_theme_name = "Adwaita";
-      cursor_blink = true;
+        font_name = "Cantarell 16";
+        icon_theme_name = "Adwaita";
+        #      theme_name = "Adwaita-dark";
+      };
 
-      font_name = "Cantarell 16";
-      icon_theme_name = "Adwaita";
-#      theme_name = "Adwaita-dark";
-    };
+      appearance = {
+        greeting_msg = "Welcome back!";
+      };
 
-    appearance = {
-      greeting_msg = "Welcome back!";
-    };
+      commands = {
+        reboot = [
+          "systemctl"
+          "reboot"
+        ];
+        poweroff = [
+          "systemctl"
+          "poweroff"
+        ];
+        x11_prefix = [
+          "startx"
+          "/usr/bin/env"
+        ];
+      };
 
-    commands = {
-      reboot = [ "systemctl" "reboot" ];
-      poweroff = [ "systemctl" "poweroff" ];
-      x11_prefix = [ "startx" "/usr/bin/env" ];
-    };
-
-    widget = {
-      clock = {
-        format = "%a %H:%M";
-        resolution = "500ms";
-        timezone = "Europe/Moscow";
-        label_width = 150;
+      widget = {
+        clock = {
+          format = "%a %H:%M";
+          resolution = "500ms";
+          timezone = "Europe/Moscow";
+          label_width = 150;
+        };
       };
     };
   };
-};
 
-#####################
+  #####################
 
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
@@ -216,27 +239,25 @@ programs.regreet = {
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
   system.stateVersion = "25.11"; # Did you read the comment?
 
+  # --- SWAP SETTINGS FOR APPLE SILICON (8GB RAM) --- #
 
-# --- SWAP SETTINGS FOR APPLE SILICON (8GB RAM) --- #
+  zramSwap = {
+    enable = true;
+    memoryPercent = 50;
+    priority = 100;
+  };
 
-zramSwap = {
-  enable = true;
-  memoryPercent = 50;
-  priority = 100;
-};
+  swapDevices = [
+    {
+      device = "/swapfile";
+      priority = 10;
+    }
+  ];
 
-swapDevices = [
-  {
-    device = "/swapfile";
-    priority = 10;
-  }
-];
-
-boot.kernel.sysctl = {
-  "vm.swappiness" = 10;
-  "vm.vfs_cache_pressure" = 50;
-  "vm.page-cluster" = 2;
-};
-
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 10;
+    "vm.vfs_cache_pressure" = 50;
+    "vm.page-cluster" = 2;
+  };
 
 }

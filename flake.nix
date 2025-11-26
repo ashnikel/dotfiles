@@ -16,35 +16,44 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, elephant, walker, ... }:
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      home-manager,
+      elephant,
+      walker,
+      ...
+    }:
     let
-      system = "aarch64-linux";              # для M1/M2
+      system = "aarch64-linux"; # для M1/M2
       pkgs = import nixpkgs { inherit system; };
-    in {
+    in
+    {
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-          inherit system;
+        inherit system;
 
-          modules = [
-            { environment.systemPackages = [ inputs.elephant.packages.${system}.default ]; }
-            
-            ./configuration.nix
-            ./apple-silicon-support
-            home-manager.nixosModules.default
+        modules = [
+          { environment.systemPackages = [ inputs.elephant.packages.${system}.default ]; }
 
-            {
-	      home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                backupFileExtension = "backup";
-                users.ash = {
-                  imports= [
-                    inputs.walker.homeManagerModules.default
-                    ./home.nix
-                  ];
-                };
-	      };
-            }
-          ];
-        };
+          ./configuration.nix
+          ./apple-silicon-support
+          home-manager.nixosModules.default
+
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              backupFileExtension = "backup";
+              users.ash = {
+                imports = [
+                  inputs.walker.homeManagerModules.default
+                  ./home.nix
+                ];
+              };
+            };
+          }
+        ];
+      };
     };
 }
