@@ -14,8 +14,17 @@
 #      ./home.nix
     ];
 
+      nix = {
+        gc = {
+          automatic = true;
+          dates = "daily";
+          options = "--delete-older-than 14d";
+        };
+      };
+
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.configurationLimit = 30;
   boot.loader.efi.canTouchEfiVariables = false;
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -34,9 +43,14 @@
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+  i18n.supportedLocales = [
+    "en_US.UTF-8/UTF-8"
+    "ru_RU.UTF-8/UTF-8"
+    "en_DK.UTF-8/UTF-8"
+  ];
 
   # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
+  i18n.defaultLocale = "en_US.UTF-8";
   # console = {
   #   font = "Lat2-Terminus16";
   #   keyMap = "us";
@@ -86,7 +100,7 @@
   programs.hyprland.enable = true;
   programs.fish.enable = true;
 #  programs.regreet.enable = true;
- 
+
 
 #####################
 programs.regreet = {
@@ -94,7 +108,7 @@ programs.regreet = {
 
   settings = {
     background = {
-      path = "/etc/background.jpg";
+      path = "/etc/background2.png";
       fit = "Cover";
     };
 
@@ -226,4 +240,3 @@ boot.kernel.sysctl = {
 
 
 }
-

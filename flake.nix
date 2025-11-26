@@ -8,9 +8,15 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    elephant.url = "github:abenz1267/elephant";
+    walker = {
+      url = "github:abenz1267/walker";
+      inputs.elephant.follows = "elephant";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = inputs@{ self, nixpkgs, home-manager, elephant, walker, ... }:
     let
       system = "aarch64-linux";              # для M1/M2
       pkgs = import nixpkgs { inherit system; };
@@ -19,6 +25,8 @@
           inherit system;
 
           modules = [
+            { environment.systemPackages = [ inputs.elephant.packages.${system}.default ]; }
+            
             ./configuration.nix
             ./apple-silicon-support
             home-manager.nixosModules.default
@@ -28,7 +36,12 @@
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 backupFileExtension = "backup";
-                users.ash = import ./home.nix;
+                users.ash = {
+                  imports= [
+                    inputs.walker.homeManagerModules.default
+                    ./home.nix
+                  ];
+                };
 	      };
             }
           ];
